@@ -1,3 +1,8 @@
 Flask
 Flask-SQLAlchemy
 gunicorn
+requests
+Flask-Login
+Werkzeug
+google-generativeai
+python-dotenv

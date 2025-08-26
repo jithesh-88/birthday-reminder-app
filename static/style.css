@@ -1,162 +1,85 @@
-/* ==== New Vivid & Colorful Design ==== */
+/* ==== Vivid & Colorful "Aurora" Design with Auth Styles ==== */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
 :root {
-    --primary-color: #6a11cb;
-    --secondary-color: #2575fc;
-    --text-color: #e0e0e0;
-    --bg-color: #121212;
-    --container-bg: rgba(255, 255, 255, 0.05);
-    --border-color: rgba(255, 255, 255, 0.2);
-    --success-bg: rgba(46, 204, 113, 0.1);
-    --success-color: #2ecc71;
-    --error-bg: rgba(231, 76, 60, 0.1);
-    --error-color: #e74c3c;
+    --primary-color: #6a11cb; --secondary-color: #2575fc; --text-color: #e0e0e0; --bg-color: #121212;
+    --container-bg: rgba(255, 255, 255, 0.05); --border-color: rgba(255, 255, 255, 0.2);
+    --success-bg: rgba(46, 204, 113, 0.1); --success-color: #2ecc71;
+    --error-bg: rgba(231, 76, 60, 0.1); --error-color: #e74c3c;
 }
-
 body {
-    font-family: 'Poppins', sans-serif;
-    color: var(--text-color);
-    background-color: var(--bg-color);
-    background-image: 
-        radial-gradient(at 20% 20%, hsla(271, 91%, 63%, 0.2) 0px, transparent 50%),
+    font-family: 'Poppins', sans-serif; color: var(--text-color); background-color: var(--bg-color);
+    background-image: radial-gradient(at 20% 20%, hsla(271, 91%, 63%, 0.2) 0px, transparent 50%),
         radial-gradient(at 80% 20%, hsla(212, 96%, 58%, 0.2) 0px, transparent 50%),
         radial-gradient(at 20% 80%, hsla(300, 91%, 63%, 0.2) 0px, transparent 50%),
         radial-gradient(at 80% 80%, hsla(180, 96%, 58%, 0.2) 0px, transparent 50%);
-    margin: 0;
-    padding: 20px;
-    line-height: 1.6;
+    margin: 0; padding: 0; line-height: 1.6;
+}
+.container { max-width: 750px; margin: 30px auto; background: var(--container-bg); border-radius: 20px; padding: 40px; border: 1px solid var(--border-color); backdrop-filter: blur(15px); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); }
+header { text-align: center; margin-bottom: 30px; }
+header h1 { font-size: 3rem; font-weight: 700; color: #fff; margin: 0; }
+header p { color: #b0b0b0; font-size: 1.1rem; }
+h2 { color: #fff; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 20px; font-weight: 600; }
+form { display: flex; flex-direction: column; gap: 15px; }
+
+/* **FIX:** Updated grid for proper alignment */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Creates two equal columns */
+    gap: 15px;
 }
 
-.container {
-    max-width: 750px;
-    margin: 30px auto;
-    background: var(--container-bg);
-    border-radius: 20px;
-    padding: 40px;
-    border: 1px solid var(--border-color);
-    backdrop-filter: blur(15px);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-}
-
-header {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-header h1 {
-    font-size: 3rem;
-    font-weight: 700;
-    color: #fff;
-    margin: 0;
-}
-
-header p {
-    color: #b0b0b0;
-    font-size: 1.1rem;
-}
-
-h2 {
-    color: #fff;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 10px;
-    margin-bottom: 20px;
-    font-weight: 600;
-}
-
-/* Form Styles */
-.add-birthday form { display: flex; flex-direction: column; gap: 15px; }
-.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-form label { font-weight: 600; margin-bottom: -10px; font-size: 0.9rem; }
-form input, form textarea {
-    padding: 12px;
-    background: rgba(0,0,0,0.2);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    color: var(--text-color);
-    font-size: 1rem;
-    transition: all 0.2s ease;
-}
-form input:focus, form textarea:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 10px var(--primary-color);
-}
+form input, form textarea { padding: 12px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-color); font-size: 1rem; transition: all 0.2s ease; }
+form input:focus, form textarea:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 10px var(--primary-color); }
 form input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); }
 form textarea { min-height: 80px; resize: vertical; }
-
-form button, .cancel-btn {
-    padding: 12px;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-form button {
-    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-    color: white;
-}
+form button, .cancel-btn { padding: 15px; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; margin-top: 10px; }
+form button { background: linear-gradient(45deg, var(--primary-color), var(--secondary-color)); color: white; }
 form button:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
 .cancel-btn { background: rgba(255,255,255,0.1); color: white; text-align: center; text-decoration: none; }
 .cancel-btn:hover { background: rgba(255,255,255,0.2); }
-
-/* List Styles */
 ul { list-style: none; padding: 0; }
-li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px;
-    background: var(--container-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    margin-bottom: 10px;
-}
+li { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: var(--container-bg); border: 1px solid var(--border-color); border-radius: 10px; margin-bottom: 10px; }
 .birthday-info { flex: 1; }
 .birthday-info strong { font-size: 1.1rem; color: #fff; }
 .birthday-info .date { color: #aaa; font-size: 0.9rem; }
 .birthday-info .notes { font-size: 0.9rem; color: #bbb; margin: 5px 0 0 0; font-style: italic; }
 .birthday-actions { display: flex; align-items: center; gap: 10px; }
 .days-left { font-weight: 600; color: #fff; background-color: rgba(255,255,255,0.1); padding: 5px 10px; border-radius: 20px; font-size: 0.9rem; }
-.edit-btn, .delete-btn {
-    text-decoration: none;
-    font-weight: 600;
-    padding: 6px 12px;
-    border-radius: 6px;
-    color: white;
-    font-size: 0.9rem;
-    border: none;
-    cursor: pointer;
-    transition: opacity 0.2s;
-}
+.edit-btn, .delete-btn { text-decoration: none; font-weight: 600; padding: 6px 12px; border-radius: 6px; color: white; font-size: 0.9rem; border: none; cursor: pointer; transition: opacity 0.2s; }
 .edit-btn { background-color: var(--secondary-color); }
 .delete-btn { background-color: #c0392b; }
 .edit-btn:hover, .delete-btn:hover { opacity: 0.8; }
-
-/* Visual Highlights */
 .birthday-today { border-left: 4px solid var(--success-color); }
 .birthday-upcoming { border-left: 4px solid #f1c40f; }
-
-/* Flash & Other Messages */
 .flash-messages { margin-bottom: 20px; }
 .flash { padding: 15px; border-radius: 8px; margin-bottom: 10px; border: 1px solid; }
 .flash.success { background: var(--success-bg); color: var(--success-color); border-color: var(--success-color); }
 .flash.error { background: var(--error-bg); color: var(--error-color); border-color: var(--error-color); }
 .empty-state { text-align: center; padding: 40px; background: rgba(0,0,0,0.2); border-radius: 10px; color: #aaa; }
-
-/* Upcoming Section */
-.next-birthday {
-    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-    text-align: center;
-    padding: 30px;
-    border-radius: 15px;
-    margin-bottom: 30px;
-    color: white;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-}
+.next-birthday.cheerful-highlight { background: linear-gradient(45deg, #ff6ec4, #7873f5); text-align: center; padding: 30px; border-radius: 15px; margin-bottom: 30px; color: white; box-shadow: 0 8px 30px rgba(120, 115, 245, 0.5); animation: pulse-glow 2s infinite alternate; }
+@keyframes pulse-glow { from { box-shadow: 0 8px 30px rgba(120, 115, 245, 0.5); transform: scale(1); } to { box-shadow: 0 12px 45px rgba(255, 110, 196, 0.7); transform: scale(1.02); } }
 .next-birthday h2 { border: none; font-size: 1.5rem; }
 .upcoming-names { font-size: 2rem; font-weight: 700; margin: 10px 0; }
 .next-birthday p { margin: 0; font-size: 1.2rem; }
 .countdown-days { font-weight: 700; }
+#map { height: 400px; width: 100%; border-radius: 15px; margin-top: 20px; border: 1px solid var(--border-color); }
+.navbar { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; background: var(--container-bg); border-bottom: 1px solid var(--border-color); backdrop-filter: blur(15px); }
+.nav-brand { font-weight: 700; font-size: 1.5rem; color: #fff; text-decoration: none; }
+.nav-links { display: flex; align-items: center; gap: 1.5rem; }
+.nav-links a { color: var(--text-color); text-decoration: none; font-weight: 600; transition: color 0.2s; }
+.nav-links a:hover { color: #fff; }
+.nav-user { color: #aaa; }
+.auth-container { max-width: 450px; margin: 50px auto; }
+.auth-container header { margin-bottom: 2rem; }
+.auth-container .form-group { text-align: left; margin-bottom: 1.5rem; }
+.auth-container label { display: block; margin-bottom: 0.5rem; font-weight: 600; }
+.auth-container input { width: 100%; box-sizing: border-box; }
+.auth-container button { width: 100%; }
+.auth-switch { margin-top: 2rem; color: #aaa; text-align: center; }
+.auth-switch a { color: var(--secondary-color); font-weight: 600; text-decoration: none; }
+.fun-facts-section { background: linear-gradient(45deg, var(--secondary-color), #ff6ec4); color: white; border-radius: 15px; padding: 25px 30px; margin-top: 30px; margin-bottom: 30px; border: 1px solid rgba(255, 255, 255, 0.3); }
+.fun-facts-section h2 { border: none; margin-top: 0; margin-bottom: 15px; font-size: 1.5rem; text-align: center; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+.fun-facts-section ul { list-style: none; padding: 0; margin: 0; }
+.fun-facts-section li { background: none; border: none; padding: 8px 0; font-size: 1.1rem; display: flex; align-items: flex-start; }
+.fun-facts-section li::before { content: '✨'; margin-right: 12px; font-size: 1.2rem; line-height: 1.5; }
