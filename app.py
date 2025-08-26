@@ -14,7 +14,7 @@ load_dotenv() # Loads the .env file for local development
 # --- App and Database Setup ---
 app = Flask(__name__)
 app.secret_key = "a-very-secret-key-for-production"
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///birthdays_users.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 login_manager = LoginManager()

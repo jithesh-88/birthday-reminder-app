@@ -6,3 +6,4 @@ Flask-Login
 Werkzeug
 google-generativeai
 python-dotenv
+psycopg2-binary
