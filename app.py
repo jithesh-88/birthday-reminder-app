@@ -119,7 +119,12 @@ def generate_gemini_fun_facts(dob, tob, pob):
     except Exception as e:
         print(f"Gemini API call failed: {e}")
         return ["Could not generate fun facts at this time."]
-
+# Add this temporary route to your app.py file
+@app.route('/create-tables-987654321')
+def create_tables():
+    with app.app_context():
+        db.create_all()
+    return "<h1>Database tables created successfully! You can now remove this route from app.py.</h1>"
 # --- Authentication Routes ---
 @app.route('/login', methods=['GET', 'POST'])
 def login():
