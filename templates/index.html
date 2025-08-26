@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Birthday Reminder 🎉</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎂 Birthday Reminder</h1>
+            <p>Never miss a special day!</p>
+        </header>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% endwith %}
+
+        {% if upcoming_birthdays %}
+        <section class="next-birthday">
+            <h2>🎉 Upcoming Birthday{% if upcoming_birthdays|length > 1 %}s{% endif %}!</h2>
+            <div class="upcoming-names">
+                {% for b, days_left, age_turning in upcoming_birthdays %}
+                    <strong>{{ b.name }}</strong>{% if not loop.last %} & {% endif %}
+                {% endfor %}
+            </div>
+            <p>
+                In 
+                <span class="countdown-days">
+                    {% if upcoming_birthdays[0][1] == 0 %}TODAY!{% else %}{{ upcoming_birthdays[0][1] }} days!{% endif %}
+                </span>
+            </p>
+        </section>
+        {% endif %}
+
+        <section class="add-birthday">
+            <h2>Add a New Birthday</h2>
+            <form method="POST" action="/">
+                <div class="form-grid">
+                    <input type="text" name="name" placeholder="Name" required>
+                    <input type="date" name="dob" required>
+                    <input type="time" name="tob" title="Time of Birth is for fun facts!">
+                    <input type="text" name="pob" placeholder="Place of Birth">
+                </div>
+                <textarea name="notes" placeholder="Gift ideas, notes..."></textarea>
+                <button type="submit">Add Birthday</button>
+            </form>
+        </section>
+
+        <section class="list-birthdays">
+            <h2>All Birthdays</h2>
+            {% if sorted_birthdays %}
+            <ul>
+                {% for b, days_left, age_turning in sorted_birthdays %}
+                <li class="{% if days_left == 0 %}birthday-today{% elif days_left <= 7 %}birthday-upcoming{% endif %}">
+                    <div class="birthday-info">
+                        <strong>{{ b.name }} (turning {{ age_turning }})</strong>
+                        <span class="date">{{ b.dob.strftime('%b %d, %Y') }}</span>
+                        {% if b.notes %}<p class="notes">Notes: {{ b.notes }}</p>{% endif %}
+                    </div>
+                    <div class="birthday-actions">
+                        <span class="days-left">
+                           {% if days_left == 0 %}Today!{% else %}{{ days_left }} days{% endif %}
+                        </span>
+                        <a href="/edit/{{ b.id }}" class="edit-btn">Edit</a>
+                        <a href="/delete/{{ b.id }}" class="delete-btn" onclick="return confirm('Are you sure you want to delete this birthday?');">Delete</a>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="empty-state">No birthdays yet. Let's add one!</p>
+            {% endif %}
+        </section>
+    </div>
+</body>
+</html>

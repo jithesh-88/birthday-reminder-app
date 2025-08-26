@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Birthday</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>✏️ Edit Birthday</h1>
+            <p>Update the details for {{ birthday.name }}</p>
+        </header>
+
+        <section class="add-birthday">
+            <form method="POST" action="/edit/{{ birthday.id }}">
+                <label for="name">Name</label>
+                <input type="text" name="name" value="{{ birthday.name }}" required>
+
+                <label for="dob">Date of Birth</label>
+                <input type="date" name="dob" value="{{ birthday.dob.strftime('%Y-%m-%d') }}" required>
+                
+                <label for="tob">Time of Birth (it's for fun facts!)</label>
+                <input type="time" name="tob" value="{{ birthday.tob or '' }}">
+
+                <label for="pob">Place of Birth (optional)</label>
+                <input type="text" name="pob" value="{{ birthday.pob or '' }}">
+                
+                <label for="notes">Notes (optional)</label>
+                <textarea name="notes">{{ birthday.notes or '' }}</textarea>
+
+                <button type="submit">Update Birthday</button>
+                <a href="/" class="cancel-btn">Cancel</a>
+            </form>
+        </section>
+    </div>
+</body>
+</html>
