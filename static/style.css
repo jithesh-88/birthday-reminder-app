@@ -94,3 +94,26 @@ footer {
 footer p {
     margin: 0;
 }
+/* Add this to the end of your style.css */
+
+/* Style for the date/time inputs */
+.date-input {
+    position: relative;
+    color: var(--text-color); /* Make sure the actual text is visible */
+}
+
+/* Create the placeholder text using the ::before pseudo-element */
+.date-input::before {
+    content: attr(data-placeholder); /* Use the text from our data-placeholder */
+    position: absolute;
+    left: 12px; /* Align with the input's padding */
+    top: 12px;
+    color: #aaa; /* Placeholder text color */
+    pointer-events: none; /* Allows you to click through the text */
+    display: block;
+}
+
+/* HIDE the placeholder when the user has entered a value */
+.date-input:valid::before {
+    display: none;
+}

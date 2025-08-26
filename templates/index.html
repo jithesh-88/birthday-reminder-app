@@ -29,8 +29,11 @@
     <form method="POST" action="/">
         <div class="form-grid">
             <input type="text" name="name" placeholder="Name" required>
-            <input type="date" name="dob" required>
-            <input type="time" name="tob" title="Time of Birth is for fun facts! (Private)">
+            
+            <input type="date" name="dob" class="date-input" data-placeholder="Date of Birth" required>
+            
+            <input type="time" name="tob" class="date-input" data-placeholder="Time of Birth (for Fun facts!)" title="Time of Birth is for fun facts! (Private)" required>
+            
             <input type="text" name="pob" placeholder="Place of Birth (for map)">
         </div>
         <textarea name="notes" placeholder="Gift ideas, notes..."></textarea>
