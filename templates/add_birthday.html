@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Add a Birthday{% endblock %}
+
+{% block content %}
+<div class="auth-container" style="max-width: 750px; text-align:left;">
+    <header style="text-align:center;">
+        <h1>Add a New Birthday</h1>
+        <p>Add a birthday to the community board.</p>
+    </header>
+    <section class="add-birthday-form">
+        <form method="POST" action="{{ url_for('add_birthday') }}">
+            <div class="form-grid">
+                <input type="text" name="name" placeholder="Name" required>
+                <input type="date" name="dob" class="date-input" data-placeholder="Date of Birth" required>
+                <input type="time" name="tob" class="date-input" data-placeholder="Time of Birth" title="Time of Birth is for fun facts! (Private)" required>
+                <input type="text" name="pob" placeholder="Place of Birth (for map)">
+            </div>
+            <textarea name="notes" placeholder="Gift ideas, notes..."></textarea>
+            <button type="submit">Add Birthday</button>
+            <a href="/" class="cancel-btn">Cancel</a>
+        </form>
+    </section>
+</div>
+{% endblock %}

@@ -1,4 +1,4 @@
 .env
 __pycache__/
 *.pyc
-birthdays_users.db
+*.db

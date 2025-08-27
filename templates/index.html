@@ -7,7 +7,8 @@
 
 {% block content %}
 <header>
-    <h1>🎂 Birthday Reminder 🎂</h1>
+    <h1>🎂 Birthday Reminder Board 🎂</h1>
+    <a href="{{ url_for('add_birthday') }}" class="add-birthday-btn">＋ Add a Birthday</a>
 </header>
 
 {% if upcoming_birthdays %}
@@ -24,25 +25,8 @@
 </section>
 {% endif %}
 
-<section class="add-birthday">
-    <h2>Add Your Birthday</h2>
-    <form method="POST" action="/">
-        <div class="form-grid">
-            <input type="text" name="name" placeholder="Name" required>
-            
-            <input type="date" name="dob" class="date-input" data-placeholder="Date of Birth" required>
-            
-            <input type="time" name="tob" class="date-input" data-placeholder="Time of Birth (for Fun facts!)" title="Time of Birth is for fun facts! (Private)" required>
-            
-            <input type="text" name="pob" placeholder="Place of Birth (for map)">
-        </div>
-        <textarea name="notes" placeholder="Gift ideas, notes..."></textarea>
-        <button type="submit">Add Birthday</button>
-    </form>
-</section>
-
 <section class="map-section">
-    <h2>Birthplace Map</h2>
+    <h2>Birthday Map</h2>
     <div id="map"></div>
 </section>
 
@@ -62,6 +46,7 @@
                    {% if item.days_left == 0 %}Today!{% else %}{{ item.days_left }} days{% endif %}
                 </span>
                 {% if current_user.id == item.birthday.user_id or current_user.email == 'jithesh882006@gmail.com' %}
+                    <a href="/fun-facts/{{ item.birthday.id }}" class="facts-btn">Facts ✨</a>
                     <a href="/edit/{{ item.birthday.id }}" class="edit-btn">Edit</a>
                     <a href="/delete/{{ item.birthday.id }}" class="delete-btn" onclick="return confirm('Are you sure?');">Delete</a>
                 {% endif %}

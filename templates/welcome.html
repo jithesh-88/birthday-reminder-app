@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Welcome!{% endblock %}
+
+{% block content %}
+<div class="welcome-container">
+    <header>
+        <h1>🎂 Welcome to the Birthday Reminder 🎂</h1>
+        <p>Join our shared board to celebrate and remember every special day together. Create a free account to unlock these amazing features:</p>
+    </header>
+
+    <div class="features-grid">
+        <div class="feature-card">
+            <h3>Shared Reminders 🗓️</h3>
+            <p>Never miss a date with a shared calendar that highlights the next upcoming birthday for everyone in the group.</p>
+        </div>
+        <div class="feature-card">
+            <h3>Interactive Map 🗺️</h3>
+            <p>See where friends were born and explore their hometowns with our interactive global map feature.</p>
+        </div>
+        <div class="feature-card">
+            <h3>AI Fun Facts ✨</h3>
+            <p>Unlock private, Live Gemini AI generated fun facts about your birth moment by adding your time of birth (optional) .</p>
+        </div>
+    </div>
+    
+    <div class="welcome-actions">
+        <a href="{{ url_for('register') }}" class="welcome-btn">Join Now</a>
+        <p>Already have an account? <a href="{{ url_for('login') }}">Login here</a>.</p>
+    </div>
+</div>
+{% endblock %}

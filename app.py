@@ -8,18 +8,21 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from sqlalchemy import extract
 from dotenv import load_dotenv
+from flask_migrate import Migrate # Add this import
 
-load_dotenv() # Loads the .env file for local development
+load_dotenv()
 
 # --- App and Database Setup ---
 app = Flask(__name__)
 app.secret_key = "a-very-secret-key-for-production"
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
+# Use DATABASE_URL from environment if available (for Render), otherwise use local SQLite
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///birthdays_users.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+migrate = Migrate(app, db) # Add this line to initialize migrations
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = 'login'
+login_manager.login_view = 'welcome'
 
 # --- Gemini API Configuration ---
 try:
@@ -64,54 +67,33 @@ def get_coords(place_name):
     except requests.RequestException as e: print(f"Geocoding error: {e}"); return None, None
 
 def calculate_birthday_details(birthday, today):
-    """
-    Calculates the current age, the age a person is turning, and the days left
-    until their next birthday.
-    """
-    # Calculate the current age. The ((today.month, today.day) < ...) part is a
-    # clever way to subtract 1 if the birthday hasn't occurred yet this year.
     age = today.year - birthday.dob.year - ((today.month, today.day) < (birthday.dob.month, birthday.dob.day))
-    
-    # Determine the date of the next birthday
     birthday_this_year = birthday.dob.replace(year=today.year)
-    
-    if birthday_this_year < today:
-        # If the birthday has already passed this year, the next one is next year.
-        next_birthday_date = birthday_this_year.replace(year=today.year + 1)
-    else:
-        # Otherwise, it's still coming up this year.
-        next_birthday_date = birthday_this_year
-
-    # Calculate the age they will be on their next birthday.
+    if birthday_this_year < today: next_birthday_date = birthday_this_year.replace(year=today.year + 1)
+    else: next_birthday_date = birthday_this_year
     age_turning = next_birthday_date.year - birthday.dob.year
-    
-    # Calculate the days remaining.
     days_left = (next_birthday_date - today).days
-    
     return days_left, age_turning
 
 def generate_gemini_fun_facts(dob, tob, pob):
     if not model or not tob:
-        return []
+        return ["Provide a time of birth to generate fun facts!"]
     try:
-        # This new prompt is much more specific and focuses on the TIME.
         prompt = f"""
-        You are a fun facts generator for a birthday app. Your main goal is to generate facts based on the **time of birth**, using the date and location as context.
-
-        Generate exactly 2 fun facts for someone born at {tob} on {dob.strftime('%B %d, %Y')} in {pob}.
-
-        Fact Types to Generate:
-        1. A "World Clock" Fact: Describe what was likely happening in another major city in a different time zone at the exact moment of their birth (e.g., "When you were born in the morning in India, people in London were just heading to bed.").
-        2. A "Sun or Moon" Fact: Based on the time of day, describe the position of the sun or moon in their birth city (e.g., "The sun was just rising over your city when you were born.").
-
+        You are a creative and cheerful fun facts generator for a birthday app. Your main goal is to generate facts based on the **time of birth**, using the date and location as context.
+        Generate exactly 3 diverse and interesting fun facts for someone born at {tob} on {dob.strftime('%B %d, %Y')} in {pob}.
+        Fact Types to Generate (choose three different types):
+        1. A "World Clock" Fact: What was happening in another major city in a different time zone at that exact moment?
+        2. A "Sun or Moon" Fact: Describe the position of the sun or moon in their birth city.
+        3. A "#1 Song" Fact: What song was #1 on the Billboard charts on that day?
+        4. A "Historical Nugget": What minor but interesting historical event happened on that day?
+        5. A "Scientific Discovery": Mention a scientific discovery or event related to that year.
         RULES:
         - Output ONLY the facts. No titles, no quotes, no extra text.
-        - Separate the two facts with a double pipe delimiter (||).
+        - Separate each fact with a double pipe delimiter (||).
         - The facts must be cheerful and non-astrological.
         """
         response = model.generate_content(prompt)
-        
-        # This parsing logic works with the new prompt
         if response.text:
             facts = [fact.strip() for fact in response.text.strip().split('||') if fact.strip()]
             return facts
@@ -120,6 +102,12 @@ def generate_gemini_fun_facts(dob, tob, pob):
         print(f"Gemini API call failed: {e}")
         return ["Could not generate fun facts at this time."]
 
+# --- New Welcome Route ---
+@app.route('/welcome')
+def welcome():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    return render_template('welcome.html')
 
 # --- Authentication Routes ---
 @app.route('/login', methods=['GET', 'POST'])
@@ -148,52 +136,56 @@ def register():
 @app.route('/logout')
 @login_required
 def logout():
-    logout_user(); return redirect(url_for('login'))
+    logout_user(); return redirect(url_for('welcome'))
 
 # --- Main Application Routes ---
-@app.route('/', methods=['GET','POST'])
+@app.route('/')
 @login_required
 def index():
-    if request.method == 'POST':
-        if current_user.email != ADMIN_EMAIL:
-            existing_birthday = Birthday.query.filter_by(user_id=current_user.id).first()
-            if existing_birthday:
-                flash("You can only add one birthday to the community board per account.", "error")
-                return redirect(url_for('index'))
-
-        pob = request.form['pob']; lat, lon = get_coords(pob)
-        new_birthday = Birthday(
-            name=request.form['name'], dob=datetime.strptime(request.form['dob'], '%Y-%m-%d').date(),
-            tob=request.form['tob'], pob=pob, notes=request.form['notes'],
-            latitude=lat, longitude=lon, user_id=current_user.id
-        )
-        db.session.add(new_birthday); db.session.commit()
-        flash(f"🎉 Birthday for {new_birthday.name} added!", "success")
-        return redirect(url_for('index'))
-
     today = date.today()
     birthdays = Birthday.query.order_by(extract('month', Birthday.dob), extract('day', Birthday.dob)).all()
-    
     birthdays_with_details = [{'birthday': b, 'days_left': d, 'age_turning': a} for d, a, b in [(*calculate_birthday_details(b, today), b) for b in birthdays]]
     sorted_birthdays = sorted(birthdays_with_details, key=lambda x: x['days_left'])
-    
     upcoming_birthdays = []
     if sorted_birthdays:
         min_days_left = sorted_birthdays[0]['days_left']
         upcoming_birthdays = [b for b in sorted_birthdays if b['days_left'] == min_days_left]
-    
     birthdays_json = [{'name': b['birthday'].name, 'lat': b['birthday'].latitude, 'lon': b['birthday'].longitude, 'pob': b['birthday'].pob} for b in sorted_birthdays if b['birthday'].latitude is not None]
-    
     return render_template('index.html', sorted_birthdays=sorted_birthdays, upcoming_birthdays=upcoming_birthdays, birthdays_json=birthdays_json)
+
+@app.route('/add', methods=['GET', 'POST'])
+@login_required
+def add_birthday():
+    if request.method == 'POST':
+        if current_user.email != ADMIN_EMAIL:
+            existing_birthday = Birthday.query.filter_by(user_id=current_user.id).first()
+            if existing_birthday:
+                flash("You can only add one birthday to the board per account.", "error")
+                return redirect(url_for('index'))
+        pob = request.form['pob']; lat, lon = get_coords(pob)
+        new_birthday = Birthday(name=request.form['name'], dob=datetime.strptime(request.form['dob'], '%Y-%m-%d').date(), tob=request.form['tob'], pob=pob, notes=request.form['notes'], latitude=lat, longitude=lon, user_id=current_user.id)
+        db.session.add(new_birthday); db.session.commit()
+        flash(f"🎉 Birthday for {new_birthday.name} added!", "success")
+        return redirect(url_for('index'))
+    return render_template('add_birthday.html')
+
+@app.route('/fun-facts/<int:id>')
+@login_required
+def fun_facts(id):
+    birthday = Birthday.query.get_or_404(id)
+    if birthday.creator != current_user and current_user.email != ADMIN_EMAIL:
+        flash("You can only view fun facts for birthdays you have added.", "error")
+        return redirect(url_for('index'))
+    facts = generate_gemini_fun_facts(birthday.dob, birthday.tob, birthday.pob)
+    return render_template('fun_facts.html', birthday=birthday, fun_facts=facts)
 
 @app.route('/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit(id):
     birthday_to_edit = Birthday.query.get_or_404(id)
-    if birthday_to_edit.user_id != current_user.id and current_user.email != ADMIN_EMAIL:
+    if birthday_to_edit.creator != current_user and current_user.email != ADMIN_EMAIL:
         flash("You can only edit birthdays that you have added.", "error")
         return redirect(url_for('index'))
-    
     if request.method == 'POST':
         birthday_to_edit.name = request.form['name']; birthday_to_edit.dob = datetime.strptime(request.form['dob'], '%Y-%m-%d').date()
         birthday_to_edit.tob = request.form['tob']; birthday_to_edit.pob = request.form['pob']; birthday_to_edit.notes = request.form['notes']
@@ -201,18 +193,15 @@ def edit(id):
         db.session.commit()
         flash(f"✅ Updated {birthday_to_edit.name}'s birthday!", "success")
         return redirect(url_for('index'))
-    else:
-        fun_facts = generate_gemini_fun_facts(birthday_to_edit.dob, birthday_to_edit.tob, birthday_to_edit.pob)
-        return render_template('edit.html', birthday=birthday_to_edit, fun_facts=fun_facts)
+    return render_template('edit.html', birthday=birthday_to_edit)
 
 @app.route('/delete/<int:id>')
 @login_required
 def delete(id):
     birthday_to_delete = Birthday.query.get_or_404(id)
-    if birthday_to_delete.user_id != current_user.id and current_user.email != ADMIN_EMAIL:
+    if birthday_to_delete.creator != current_user and current_user.email != ADMIN_EMAIL:
         flash("You can only delete birthdays that you have added.", "error")
         return redirect(url_for('index'))
-    
     db.session.delete(birthday_to_delete); db.session.commit()
     flash(f"🗑️ Deleted {birthday_to_delete.name}'s birthday", "success")
     return redirect(url_for('index'))

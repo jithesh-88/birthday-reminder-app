@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Fun Facts for {{ birthday.name }}{% endblock %}
+
+{% block content %}
+<div class="auth-container" style="max-width: 750px; text-align:left;">
+    <header style="text-align:center;">
+        <h1>✨ Fun Facts for {{ birthday.name }}! ✨</h1>
+        <p>Based on being born at {{ birthday.tob }} in {{ birthday.pob }}</p>
+    </header>
+
+    <section class="fun-facts-section">
+        <ul>
+            {% for fact in fun_facts %}
+                <li>{{ fact }}</li>
+            {% else %}
+                <li>No fun facts could be generated. Make sure a time of birth was provided!</li>
+            {% endfor %}
+        </ul>
+    </section>
+    <a href="/" class="cancel-btn">Back to Main Board</a>
+</div>
+{% endblock %}
